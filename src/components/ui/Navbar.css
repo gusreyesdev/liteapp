@@ -1,0 +1,14 @@
+.centeredIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconUser{
+  margin-left: 5px;
+}
+.nameUser{
+    margin-left: 5px;
+    margin-right: 10px;
+}
+

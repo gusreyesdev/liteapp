@@ -1,0 +1,17 @@
+.containerLoading {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingCustom{
+    width: 3rem;
+    height: 3rem;
+}
+
+.list {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
