@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { CreateCompany, CreateInventory, Dashboard, DeleteCompany, Login, Register, UpdateCompany } from "../components/screens";
+import { Login, Register, Detour, Dashboard, DashboardByUser, CreateCompany, CreateInventory, UpdateCompany } from "../components/screens";
 import { useAuthStore } from "../hooks";
 
 export const AppRouter = () => {
@@ -33,14 +33,16 @@ export const AppRouter = () => {
         </>
       ) : (
         <>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Detour />} />
           <Route path="/*" element={<Navigate to="/" />} />
+
+          <Route path="dashboard" element={<Dashboard/>} />
+
+          <Route path="dashboardByUser" element={<DashboardByUser/>} />
 
           <Route path="createCompany" element={<CreateCompany/>} />
 
           <Route path="updateCompany" element={<UpdateCompany/>} />
-
-          <Route path="deleteCompany" element={<DeleteCompany/>} />
 
           <Route path="createInventory" element={<CreateInventory/>} />
 

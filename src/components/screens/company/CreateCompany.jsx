@@ -1,9 +1,10 @@
-import { useEffect } from "react";
-import { useForm, useCompanyStore } from "../../../hooks";
-import "./Company.css";
-
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+
+import { useCreateCompanyMutation, useGetUsersQuery } from "../../../store/api";
+import { useForm } from "../../../hooks";
+import "./Company.css";
 
 const createFormFields = {
   nit: "",
@@ -13,9 +14,23 @@ const createFormFields = {
 };
 
 export const CreateCompany = () => {
-  const { startCreateCompany, isLoading } = useCompanyStore();
+  const { user } = useSelector((state) => state.auth);
 
-  const navigate = useNavigate();
+  const { data: users } = useGetUsersQuery();
+
+  const [selectUser, setSelectUser] = useState({});
+
+  const userArray = [];
+
+  if (users != undefined) {
+    users.user.forEach((userData) => {
+      if (userData.id != user.id) {
+        userArray.push(userData);
+      }
+    });
+  }
+
+  const [createCompany] = useCreateCompanyMutation();
 
   const { nit, name, address, phone, onInputChange } =
     useForm(createFormFields);
@@ -53,21 +68,36 @@ export const CreateCompany = () => {
     return true;
   };
 
-  const createSubmit = (event) => {
+  const handleChangeUser = (e) => {
+    setSelectUser({
+      user: e.target.value,
+    });
+  };
+
+  const createSubmit = async (event) => {
     event.preventDefault();
 
     if (isFormValid()) {
-      startCreateCompany({
-        nit: nit,
-        name: name,
-        address: address,
-        phone: phone,
-      });
+      try {
+        const payload = await createCompany({
+          nit: nit,
+          name: name,
+          address: address,
+          phone: phone,
+          UserId: parseInt(selectUser.user),
+        }).unwrap();
 
-      if (isLoading === false) {
-        setTimeout(() => {
-          navigate("/", {});
-        }, 50);
+        Swal.fire({
+          icon: "success",
+          title: "Exitoso",
+          text: "La empresa ha sido añadida",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.data.msg,
+        });
       }
     }
   };
@@ -75,6 +105,25 @@ export const CreateCompany = () => {
   return (
     <div className="container mt-5 centered">
       <form onSubmit={createSubmit}>
+
+        <div className="form-floating mb-3">
+          <select
+            className="form-select"
+            defaultValue="0"
+            onChange={handleChangeUser}
+          >
+            <option value="0" disabled>
+              Seleccione Propietario Empresa
+            </option>
+
+            {userArray.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="form-floating mb-3">
           <input
             type="number"

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import { useForm, useCompanyStore } from "../../../hooks";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+
+import { useForm } from "../../../hooks";
+import { useUpdateCompanyMutation } from "../../../store/api";
 import "./Company.css";
 
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 
 const updateFormFields = {
   name: "",
@@ -12,20 +14,13 @@ const updateFormFields = {
 };
 
 export const UpdateCompany = () => {
-  const { companies, startLoadingCompanies, starUpdateCompany, isLoading } =
-    useCompanyStore();
+  const { state } = useLocation();
 
-  const [selectCompany, setSelectCompany] = useState({});
+  const { user } = useSelector((state) => state.auth);
 
-  const navigate = useNavigate();
+  const [updateCompany] = useUpdateCompanyMutation();
 
   const { name, address, phone, onInputChange } = useForm(updateFormFields);
-
-  const handleChangeCompany = (e) => {
-    setSelectCompany({
-      company: e.target.value,
-    });
-  };
 
   const isFormValid = () => {
     if (name.trim().length === 0) {
@@ -53,43 +48,43 @@ export const UpdateCompany = () => {
     return true;
   };
 
-  const updateSubmit = (event) => {
+  const updateSubmit = async (event) => {
     event.preventDefault();
 
     if (isFormValid()) {
-      starUpdateCompany({
-        selectCompany,
-        name: name,
-        address: address,
-        phone: phone,
-      });
+
+      try {
+
+        const payload = await updateCompany({
+          nit: state.nit,
+          name: name,
+          address: address,
+          phone: phone,
+          UserId: user.id,
+        }).unwrap();
+
+        Swal.fire({
+          icon: "success",
+          title: "Exitoso",
+          text: "La empresa ha sido actualizada",
+        });
+
+      } catch (error) {
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.data.msg,
+        });
+      
+      }
     }
   };
 
-  useEffect(() => {
-    startLoadingCompanies();
-  }, []);
 
   return (
     <div className="container mt-5 centered">
       <form onSubmit={updateSubmit}>
-        <div className="form-floating mb-3">
-          <select
-            className="form-select"
-            defaultValue="0"
-            onChange={handleChangeCompany}
-          >
-            <option value="0" disabled>
-              Seleccione una Empresa
-            </option>
-
-            {companies.map((company) => (
-              <option key={company.nit} value={company.nit}>
-                {company.name}
-              </option>
-            ))}
-          </select>
-        </div>
 
         <div className="form-floating mb-3">
           <input
@@ -130,7 +125,6 @@ export const UpdateCompany = () => {
           <button
             className="btn btn-secondary"
             onClick={updateSubmit}
-            //disabled={loading}
           >
             Actualizar
           </button>

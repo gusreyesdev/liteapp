@@ -27,38 +27,6 @@ export const Navbar = () => {
             >
               Crear Empresa
             </NavLink>
-
-            <NavLink
-              className={({ isActive }) =>
-                "nav-item nav-link text-nowrap text-white mx-2" +
-                (isActive ? "active" : "")
-              }
-              to="/updateCompany"
-            >
-              Editar Empresa
-            </NavLink>
-
-            <NavLink
-              className={({ isActive }) =>
-                "nav-item nav-link text-nowrap text-white" +
-                (isActive ? "active" : "")
-              }
-              to="/deleteCompany"
-            >
-              Eliminar Empresa
-            </NavLink>
-
-            <NavLink
-              className={({ isActive }) =>
-                "nav-item nav-link text-nowrap text-white mx-5" +
-                (isActive ? "active" : "")
-              }
-              to="/createInventory"
-            >
-              Crear Inventario
-            </NavLink>
-
-
           </>
         ) : null}
 
